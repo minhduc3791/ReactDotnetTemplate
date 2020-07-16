@@ -5,13 +5,13 @@ using ReactDotnetTemplate.Models;
 
 namespace ReactDotnetTemplate.DAO
 {
-    public partial class AppContext : DbContext
+    public partial class AppDbContext : DbContext
     {
-        public AppContext()
+        public AppDbContext()
         {
         }
 
-        public AppContext(DbContextOptions<AppContext> options)
+        public AppDbContext(DbContextOptions<AppDbContext> options)
             : base(options)
         {
         }

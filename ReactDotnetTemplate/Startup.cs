@@ -24,7 +24,7 @@ namespace ReactDotnetTemplate
         {
 
             services.AddControllersWithViews();
-            services.AddDbContext<AppContext>(opts => opts.UseSqlServer(Configuration.GetConnectionString("AppConnection")));
+            services.AddDbContext<AppDbContext>(opts => opts.UseSqlServer(Configuration.GetConnectionString("AppConnection")));
 
             // In production, the React files will be served from this directory
             services.AddSpaStaticFiles(configuration =>
