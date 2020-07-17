@@ -10,7 +10,7 @@ using ReactDotnetTemplate.Models;
 
 namespace ReactDotnetTemplate.Controllers
 {
-    [Route("api/[controller]")]
+    [Route("[controller]")]
     [ApiController]
     public class StoresController : ControllerBase
     {
