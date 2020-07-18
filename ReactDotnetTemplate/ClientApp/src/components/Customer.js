@@ -1,123 +1,105 @@
-import React, { Component } from 'react';
-import { Button, Modal, Form, Icon, Table } from 'semantic-ui-react'
+import React, { useState, useEffect } from 'react';
+import { Button, Modal, Form, Icon, Input } from 'semantic-ui-react'
+import ITable from './ITable'
 
-export class Customer extends Component {
-    static displayName = Customer.name;
+const Customer = () => {
+    const [data, setData] = useState([]);
+    const [loading, setLoading] = useState(true);
+    const [column, setColumn] = useState(null);
+    const [direction, setDirection] = useState(null);
+    const [disabled, setDisabled] = useState(true);
+    const [customerName, setCustomerName] = useState('');
+    const [customerAddress, setCustomerAddress] = useState('');
+    const [modalOpen, setModalOpen] = useState(false);
 
-    constructor(props) {
-        super(props);
-
-        this.state = {
-            customers: [],
-            loading: true,
-            column: null,
-            direction: null,
-        };
-    }
-
-    handleSort = (clickedColumn) => () => {
-        const { column, data, direction } = this.state
+    const handleSort = (clickedColumn) => () => {
 
         if (column !== clickedColumn) {
-            this.setState({
-                column: clickedColumn,
-                //data: _.sortBy(data, [clickedColumn]),
-                direction: 'ascending',
-            })
+            setColumn(clickedColumn);
+            setData(data);
+            setDirection('ascending');
 
             return
         }
 
-        this.setState({
-            customers: this.state.customers.reverse(),
-            direction: direction === 'ascending' ? 'descending' : 'ascending',
-        })
+        //sort data before set
+        setData(data);
+        setDirection(direction === 'ascending' ? 'descending' : 'ascending');
     }
 
-    componentDidMount() {
-        this.populateData();
-    }
-
-    static renderCustomersTable(customers, column, direction, handleSort) {
-        return (
-            <Table sortable celled fixed>
-                <Table.Header>
-                    <Table.Row>
-                        <Table.HeaderCell
-                            sorted={column === 'name' ? direction : null}
-                            onClick={handleSort('name')}
-                        >
-                                    Name
-                    </Table.HeaderCell>
-                    <Table.HeaderCell
-                        sorted={column === 'address' ? direction : null}
-                        onClick={handleSort('address')}
-                    >
-                            Age
-                    </Table.HeaderCell>
-                    <Table.HeaderCell>Actions</Table.HeaderCell>
-                    <Table.HeaderCell>Actions</Table.HeaderCell>
-                    </Table.Row>
-                </Table.Header>
-                <Table.Body>
-                    {customers.map(({ id, name, address }) => (
-                        <Table.Row key={id}>
-                            <Table.Cell>{name}</Table.Cell>
-                            <Table.Cell>{address}</Table.Cell>
-                            <Table.Cell>
-                                <Button icon labelPosition='left' color="yellow">
-                                    <Icon name='edit' />
-                                    EDIT
-                                </Button>
-                            </Table.Cell>
-                            <Table.Cell>
-                                <Button icon labelPosition='left' color="red">
-                                    <Icon name='delete' />
-                                    DELETE
-                                </Button>
-                            </Table.Cell>
-                        </Table.Row>
-                    ))}
-                </Table.Body>
-            </Table>
-        );
-    }
-
-    render() {
-        let contents = this.state.loading
-            ? <p><em>Loading...</em></p>
-            : Customer.renderCustomersTable(this.state.customers, this.state.column, this.state.direction, this.handleSort);
-
-        return (
-            <>
-                <Modal size="small" centered trigger={<Button primary>New Customer</Button>}>
-                    <Modal.Header>Create customer</Modal.Header>
-                    <Modal.Content>
-                        <Form>
-                            <Form.Field>
-                                <label>Name</label>
-                                <input placeholder='Name' />
-                            </Form.Field>
-                            <Form.Field>
-                                <label>Address</label>
-                                <input placeholder='Address' />
-                            </Form.Field>
-                        </Form>
-                    </Modal.Content>
-                    <Modal.Actions>
-                        <Button color="black">Cancel</Button>
-                        <Button disabled color="green" icon labelPosition="right">Create<Icon name="check" /></Button>
-                    </Modal.Actions>
-                </Modal>
-                {contents}
-            </>
-        );
-    }
-
-    async populateData() {
-        const response = await fetch('customers/');
+    const fetchData = async () => {
+        const response = await fetch('customers');
         const data = await response.json();
         console.log(data);
-        this.setState({ customers: data, loading: false });
+        setData(data);
+        setLoading(false);
     }
+
+    const clearForm = () => {
+        setCustomerName('');
+        setCustomerAddress('');
+        setModalOpen(false);
+    }
+
+    const addCustomer = async () => {
+        setLoading(true);
+        const response = await fetch('customers', {
+            method: 'POST',
+            headers: {
+                'Accept': 'application/json',
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({ name: customerName, address: customerAddress })
+        });
+        const newData = await response.json();
+        setData([...data, newData]);
+        setLoading(false);
+        clearForm();
+    }
+
+    const handleEdit = (id, newName, newAddress) => {
+        setData(data.map(d => (d.id === id ? { ...d, newName, newAddress } : d)));
+    }
+
+    useEffect(() => {
+        fetchData();
+    }, [])
+
+    useEffect(() => {
+        if (customerName && customerAddress && customerName.length > 0 && customerAddress.length > 0) {
+            setDisabled(false);
+        } else {
+            setDisabled(true);
+        }
+    }, [customerName, customerAddress]);
+
+    return (
+        <>
+            <Modal size="small" open={modalOpen} onClose={clearForm}
+                trigger={<Button primary onClick={() => { setModalOpen(true) }}>New Customer</Button>} centered>
+                <Modal.Header>Create customer</Modal.Header>
+                <Modal.Content>
+                    <Form>
+                        <Form.Field>
+                            <label>Name</label>
+                            <Input placeholder='Name' value={customerName} onChange={e => setCustomerName(e.target.value)} />
+                        </Form.Field>
+                        <Form.Field>
+                            <label>Address</label>
+                            <Input placeholder='Address' value={customerAddress} onChange={e => setCustomerAddress(e.target.value)}/>
+                        </Form.Field>
+                    </Form>
+                </Modal.Content>
+                <Modal.Actions>
+                    <Button color="black" onClick={clearForm}>Cancel</Button>
+                    <Button disabled={disabled} color="green" icon labelPosition="right" onClick={addCustomer}>Create<Icon name="check" /></Button>
+                </Modal.Actions>
+            </Modal>
+            {loading
+                ? <p><em>Loading...</em></p>
+                : <ITable data={data} column={column} direction={direction} handleSort={handleSort} handleEdit={handleEdit} />}
+        </>
+    );
 }
+
+export default Customer;
