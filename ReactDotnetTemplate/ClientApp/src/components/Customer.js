@@ -57,8 +57,20 @@ const Customer = () => {
         clearForm();
     }
 
-    const handleEdit = (id, newName, newAddress) => {
-        setData(data.map(d => (d.id === id ? { ...d, newName, newAddress } : d)));
+    const handleEdit = async (id, newName, newAddress) => {
+        setLoading(true);
+        const response = await fetch('customers/' + id, {
+            method: 'PUT',
+            headers: {
+                'Accept': 'application/json',
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({ id: id, name: newName, address: newAddress })
+        });
+        if (response.status === 204) {
+            setData(data.map(d => (d.id === id ? { 'id': id, 'name': newName, 'address': newAddress } : d)));
+        }
+        setLoading(false);
     }
 
     useEffect(() => {

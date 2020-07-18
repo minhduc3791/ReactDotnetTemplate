@@ -53,10 +53,9 @@ namespace ReactDotnetTemplate.Controllers
                 return BadRequest();
             }
 
-            _context.Entry(customer).State = EntityState.Modified;
-
             try
             {
+                _context.Update(customer);
                 await _context.SaveChangesAsync();
             }
             catch (DbUpdateConcurrencyException)

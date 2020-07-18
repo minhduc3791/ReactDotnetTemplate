@@ -1,33 +1,39 @@
 ﻿import React, { useState, useEffect } from 'react'
-import { Button, Icon, Table, Modal, Input, Form } from 'semantic-ui-react'
+import { Button, Icon, Table, Modal, Input, Form, Menu } from 'semantic-ui-react'
 
-const ITable = ({ data, column, direction, handleSort }) => {
+const ITable = ({ data, column, direction, handleSort, handleEdit }) => {
     const [modalOpen, setModalOpen] = useState(false);
-    const [newName, setNewName] = useState('');
-    const [newAddress, setNewAddress] = useState('');
+    const [currentId, setCurrentId] = useState(-1);
+    const [currentName, setCurrentName] = useState('');
+    const [currentAddress, setCurrentAddress] = useState('');
     const [disabled, setDisabled] = useState(true);
 
     useEffect(() => {
-        if (newName && newAddress && newName.length > 0 && newAddress.length > 0) {
+        if (currentName && currentAddress && currentName.length > 0 && currentAddress.length > 0) {
             setDisabled(false);
         } else {
             setDisabled(true);
         }
-    }, [newName, newAddress]);
+    }, [currentName, currentAddress]);
 
     const clearForm = () => {
         setModalOpen(false);
     }
 
-    const initForm = (name, address) => {
-        console.log(name, address);
+    const initForm = (id, name, address) => {
+        console.log(id, name, address);
         setModalOpen(true);
-        setNewName(name);
-        setNewAddress(address);
+        setCurrentId(id);
+        setCurrentName(name);
+        setCurrentAddress(address);
     }
 
-    const updateData = (id) => {
-        console.log(id);
+    const _handleEdit = (id, name, address) => {
+        setModalOpen(false);
+        handleEdit(id, name, address)
+    }
+
+    const deleteData = (id) => {
     }
 
     return (
@@ -58,7 +64,7 @@ const ITable = ({ data, column, direction, handleSort }) => {
                         <Table.Cell>
                             <Modal size="small" open={modalOpen} onClose={clearForm}
                                 trigger={<Button icon labelPosition='left' color="yellow"
-                                    onClick={() => initForm(name, address)}>
+                                    onClick={() => initForm(id, name, address)}>
                                     <Icon name='edit' />
                                     Edit</Button>} centered>
                                 <Modal.Header>Create customer</Modal.Header>
@@ -66,17 +72,17 @@ const ITable = ({ data, column, direction, handleSort }) => {
                                     <Form>
                                         <Form.Field>
                                             <label>Name</label>
-                                            <Input placeholder='Name' value={newName} onChange={(e) => setNewName(e.target.value)} />
+                                            <Input placeholder='Name' value={currentName} onChange={(e) => setCurrentName(e.target.value)} />
                                         </Form.Field>
                                         <Form.Field>
                                             <label>Address</label>
-                                            <Input placeholder='Address' value={newAddress} onChange={(e) => setNewAddress(e.target.value)} />
+                                            <Input placeholder='Address' value={currentAddress} onChange={(e) => setCurrentAddress(e.target.value)} />
                                         </Form.Field>
                                     </Form>
                                 </Modal.Content>
                                 <Modal.Actions>
                                     <Button color="black" onClick={() => { setModalOpen(false) }}>Cancel</Button>
-                                    <Button disabled={disabled} color="green" icon labelPosition="right" onClick={() => updateData(id)}>Create<Icon name="check" /></Button>
+                                    <Button disabled={disabled} color="green" icon labelPosition="right" onClick={() => _handleEdit(currentId, currentName, currentAddress)}>Create<Icon name="check" /></Button>
                                 </Modal.Actions>
                             </Modal>
                         </Table.Cell>
@@ -89,6 +95,24 @@ const ITable = ({ data, column, direction, handleSort }) => {
                     </Table.Row>
                 ))}
             </Table.Body>
+            <Table.Footer>
+                <Table.Row>
+                    <Table.HeaderCell colSpan='4'>
+                        <Menu floated='right' pagination>
+                            <Menu.Item as='a' icon>
+                                <Icon name='chevron left' />
+                            </Menu.Item>
+                            <Menu.Item as='a'>1</Menu.Item>
+                            <Menu.Item as='a'>2</Menu.Item>
+                            <Menu.Item as='a'>3</Menu.Item>
+                            <Menu.Item as='a'>4</Menu.Item>
+                            <Menu.Item as='a' icon>
+                                <Icon name='chevron right' />
+                            </Menu.Item>
+                        </Menu>
+                    </Table.HeaderCell>
+                </Table.Row>
+            </Table.Footer>
         </Table>
     )
 }
