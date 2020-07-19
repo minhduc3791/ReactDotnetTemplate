@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Button, Modal, Form, Icon, Input } from 'semantic-ui-react'
 import ITable from './ITable'
+import IPaging from './IPaging';
 
 const Customer = () => {
     const [data, setData] = useState([]);
@@ -11,8 +12,10 @@ const Customer = () => {
     const [customerName, setCustomerName] = useState('');
     const [customerAddress, setCustomerAddress] = useState('');
     const [modalOpen, setModalOpen] = useState(false);
+    const [pageSize, _setPageSize] = useState(5);
+    const [pageIndex, _setPageIndex] = useState(1);
 
-    const handleSort = (clickedColumn) => () => {
+    const _handleSort = (clickedColumn) => () => {
 
         if (column !== clickedColumn) {
             setColumn(clickedColumn);
@@ -28,7 +31,17 @@ const Customer = () => {
     }
 
     const fetchData = async () => {
-        const response = await fetch('customers');
+        let params = {
+            "pageSize": pageSize,
+            "pageIndex": pageIndex,
+        };
+
+        let queryString = Object.keys(params)
+            .map(k => encodeURIComponent(k) + '=' + encodeURIComponent(params[k]))
+            .join('&');
+
+
+        const response = await fetch('customers?' + queryString);
         const data = await response.json();
         console.log(data);
         setData(data);
@@ -57,7 +70,7 @@ const Customer = () => {
         clearForm();
     }
 
-    const handleEdit = async (id, newName, newAddress) => {
+    const _handleEdit = async (id, newName, newAddress) => {
         setLoading(true);
         const response = await fetch('customers/' + id, {
             method: 'PUT',
@@ -73,9 +86,26 @@ const Customer = () => {
         setLoading(false);
     }
 
+    const _handleDelete = async (id) => {
+        console.log('delete: ' + id);
+        setLoading(true);
+/*        const response = await fetch('customers/' + id, {
+            method: 'PUT',
+            headers: {
+                'Accept': 'application/json',
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({ id: id, name: newName, address: newAddress })
+        });
+        if (response.status === 204) {
+            setData(data.map(d => (d.id === id ? { 'id': id, 'name': newName, 'address': newAddress } : d)));
+        }*/
+        setLoading(false);
+    }
+
     useEffect(() => {
         fetchData();
-    }, [])
+    }, [pageSize, pageIndex])
 
     useEffect(() => {
         if (customerName && customerAddress && customerName.length > 0 && customerAddress.length > 0) {
@@ -109,7 +139,11 @@ const Customer = () => {
             </Modal>
             {loading
                 ? <p><em>Loading...</em></p>
-                : <ITable data={data} column={column} direction={direction} handleSort={handleSort} handleEdit={handleEdit} />}
+                : <>
+                    <ITable data={data} column={column} direction={direction} handleSort={_handleSort} handleEdit={_handleEdit} handleDelete={_handleDelete} />
+                    <IPaging pageSize={pageSize} pageIndex={pageIndex} setPageIndex={_setPageIndex} setPageSize={_setPageSize} />
+                </>
+                }
         </>
     );
 }

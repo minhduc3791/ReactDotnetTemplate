@@ -23,9 +23,9 @@ namespace ReactDotnetTemplate.Controllers
 
         // GET: api/Customers
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<Customer>>> GetCustomer()
+        public async Task<ActionResult<IEnumerable<Customer>>> GetCustomer(int pageSize, int pageIndex)
         {
-            return await _context.Customer.ToListAsync();
+            return await _context.Customer.Skip(pageSize * (pageIndex - 1)).Take(pageSize).ToListAsync();
         }
 
         // GET: api/Customers/5
