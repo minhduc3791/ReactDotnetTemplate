@@ -14,8 +14,12 @@ const Customer = () => {
     const [modalOpen, setModalOpen] = useState(false);
     const [pageSize, _setPageSize] = useState(5);
     const [pageIndex, _setPageIndex] = useState(1);
+    const [hasNextPage, setHasNextPage] = useState(false);
+    const [hasPreviousPage, setHasPreviousPage] = useState(false);
+    const [totalPages, setTotalPages] = useState(1);
 
-    const _handleSort = (clickedColumn) => () => {
+    const _handleSort = (clickedColumn) => {
+        console.log(clickedColumn);
 
         if (column !== clickedColumn) {
             setColumn(clickedColumn);
@@ -42,9 +46,12 @@ const Customer = () => {
 
 
         const response = await fetch('customers?' + queryString);
-        const data = await response.json();
-        console.log(data);
-        setData(data);
+        const paginatedData = await response.json();
+        console.log(paginatedData);
+        setData(paginatedData.data);
+        setHasNextPage(paginatedData.hasNextPage);
+        setHasPreviousPage(paginatedData.hasPreviousPage);
+        setTotalPages(paginatedData.totalPages);
         setLoading(false);
     }
 
@@ -141,7 +148,8 @@ const Customer = () => {
                 ? <p><em>Loading...</em></p>
                 : <>
                     <ITable data={data} column={column} direction={direction} handleSort={_handleSort} handleEdit={_handleEdit} handleDelete={_handleDelete} />
-                    <IPaging pageSize={pageSize} pageIndex={pageIndex} setPageIndex={_setPageIndex} setPageSize={_setPageSize} />
+                    <IPaging pageSize={pageSize} pageIndex={pageIndex} setPageIndex={_setPageIndex} setPageSize={_setPageSize}
+                        totalPages={totalPages} hasPreviousPage={hasPreviousPage} hasNextPage={hasNextPage} />
                 </>
                 }
         </>

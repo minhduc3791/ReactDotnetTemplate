@@ -9,21 +9,26 @@ const PAGE_SIZE = [
     { key: 50, text: '50', value: 50 }
 ];
 
-const IPaging = ({ pageSize, pageIndex, setPageIndex, setPageSize}) => (
+const createPagingMenu = (pageIndex, setPageIndex, totalPages) => {
+    const menuItems = [];
+    for (let i = 1; i <= totalPages; i++) {
+        menuItems.push(<Menu.Item key={i} as='a' active={pageIndex === i} onClick={() => { setPageIndex(i) }}>{i}</Menu.Item>)
+    }
+    return menuItems;
+}
+
+const IPaging = ({ pageSize, pageIndex, setPageIndex, setPageSize, totalPages, hasPreviousPage, hasNextPage}) => (
     <Grid>
         <Grid.Column floated='left' width={1}>
-            <Dropdown defaultValue={5} compact selection onChange={(e, { value }) => setPageSize(value)} options={PAGE_SIZE} />
+            <Dropdown defaultValue={pageSize} compact selection onChange={(e, { value }) => setPageSize(value)} options={PAGE_SIZE} />
         </Grid.Column>
         <Grid.Column floated='right' width={5}>
             <Menu floated='right' pagination>
-                <Menu.Item as='a' icon>
+                <Menu.Item as='a' icon disabled={!hasPreviousPage} onClick={() => { setPageIndex(pageIndex - 1) }}>
                     <Icon name='chevron left' />
                 </Menu.Item>
-                <Menu.Item as='a' active onClick={() => { setPageSize(1) }}>1</Menu.Item>
-                <Menu.Item as='a' onClick={() => { setPageSize(2) }}>2</Menu.Item>
-                <Menu.Item as='a' onClick={() => { setPageSize(3) }}>3</Menu.Item>
-                <Menu.Item as='a' onClick={() => { setPageSize(4) }}>4</Menu.Item>
-                <Menu.Item as='a' icon>
+                {createPagingMenu(pageIndex, setPageIndex, totalPages)}
+                <Menu.Item as='a' icon disabled={!hasNextPage} onClick={() => { setPageIndex(pageIndex + 1) }}>
                     <Icon name='chevron right' />
                 </Menu.Item>
             </Menu>

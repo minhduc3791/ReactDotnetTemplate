@@ -51,15 +51,15 @@ const ITable = ({ data, column, direction, handleSort, handleEdit, handleDelete 
                 <Table.Row>
                     <Table.HeaderCell
                         sorted={column === 'name' ? direction : null}
-                        onClick={handleSort('name')}
+                        onClick={() => { handleSort('name') }}
                     >
                         Name
                         </Table.HeaderCell>
                     <Table.HeaderCell
                         sorted={column === 'address' ? direction : null}
-                        onClick={handleSort('address')}
+                        onClick={() => { handleSort('address') }}
                     >
-                        Age
+                        Address
                         </Table.HeaderCell>
                     <Table.HeaderCell>Actions</Table.HeaderCell>
                     <Table.HeaderCell>Actions</Table.HeaderCell>

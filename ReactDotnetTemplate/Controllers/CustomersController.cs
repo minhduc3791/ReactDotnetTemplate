@@ -23,9 +23,11 @@ namespace ReactDotnetTemplate.Controllers
 
         // GET: api/Customers
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<Customer>>> GetCustomer(int pageSize, int pageIndex)
+        public async Task<ActionResult<PaginatedData<Customer>>> GetCustomer(int? pageSize, int? pageIndex)
         {
-            return await _context.Customer.Skip(pageSize * (pageIndex - 1)).Take(pageSize).ToListAsync();
+            int defaultPageIndex = 1;
+            int defaultPageSize = 5;
+            return await PaginatedData<Customer>.CreateAsync(_context.Customer.AsNoTracking(), pageIndex ?? defaultPageIndex, pageSize ?? defaultPageSize); ;
         }
 
         // GET: api/Customers/5
