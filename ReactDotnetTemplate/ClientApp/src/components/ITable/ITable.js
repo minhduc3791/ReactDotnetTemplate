@@ -23,7 +23,6 @@ const ITable = ({ data, column, direction, handleSort, handleEdit, handleDelete 
     }
 
     const initForm = (id, name, address) => {
-        console.log(id, name, address);
         setOpenEditModal(true);
         setCurrentId(id);
         setCurrentName(name);
@@ -101,7 +100,7 @@ const ITable = ({ data, column, direction, handleSort, handleEdit, handleDelete 
                                     onClick={() => openDeleteConfirmation(id)}>
                                     <Icon name='delete' />
                                     DELETE</Button>} centered>
-                                <Modal.Header>Create customer</Modal.Header>
+                                <Modal.Header>Delete customer</Modal.Header>
                                 <Modal.Content>
                                     <h1>Are you sure?</h1>
                                 </Modal.Content>

@@ -52,7 +52,7 @@ export class Product extends Component {
     }
 
     async populateWeatherData() {
-        const response = await fetch('products/');
+        const response = await fetch('api/products/');
         const data = await response.json();
         console.log(data);
         this.setState({ forecasts: data, loading: false });

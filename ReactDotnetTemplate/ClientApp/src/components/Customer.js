@@ -3,6 +3,13 @@ import { Button, Modal, Form, Icon, Input } from 'semantic-ui-react'
 import ITable from './ITable'
 import IPaging from './IPaging';
 
+import { fetchCustomer, editCustomer, deleteCustomer, addCustomer } from '../services/customerServices';
+
+const SORT_DIRECTION = {
+    'ascending': 1,
+    'descending': -1,
+};
+
 const Customer = () => {
     const [data, setData] = useState([]);
     const [loading, setLoading] = useState(true);
@@ -18,36 +25,25 @@ const Customer = () => {
     const [hasPreviousPage, setHasPreviousPage] = useState(false);
     const [totalPages, setTotalPages] = useState(1);
 
-    const _handleSort = (clickedColumn) => {
-        console.log(clickedColumn);
+    const _sortArray = (arr, sortProp, sortDirection) => {
+        return [...arr].sort((a, b) => (b[sortProp].localeCompare(a[sortProp]) === sortDirection ? 1 : -1));
+    }
 
-        if (column !== clickedColumn) {
-            setColumn(clickedColumn);
-            setData(data);
-            setDirection('ascending');
-
-            return
+    useEffect(() => {
+        if (data.length > 0 && column !== null && direction !== null) {
+            setData(_sortArray(data, column, SORT_DIRECTION[direction]));
         }
+    }, [column, direction])
 
-        //sort data before set
-        setData(data);
+    const _handleSort = (clickedColumn) => {
         setDirection(direction === 'ascending' ? 'descending' : 'ascending');
+        setColumn(clickedColumn);
     }
 
     const fetchData = async () => {
-        let params = {
-            "pageSize": pageSize,
-            "pageIndex": pageIndex,
-        };
+        const paginatedData = await fetchCustomer(pageSize, pageIndex);
+        //handle error
 
-        let queryString = Object.keys(params)
-            .map(k => encodeURIComponent(k) + '=' + encodeURIComponent(params[k]))
-            .join('&');
-
-
-        const response = await fetch('customers?' + queryString);
-        const paginatedData = await response.json();
-        console.log(paginatedData);
         setData(paginatedData.data);
         setHasNextPage(paginatedData.hasNextPage);
         setHasPreviousPage(paginatedData.hasPreviousPage);
@@ -63,50 +59,29 @@ const Customer = () => {
 
     const addCustomer = async () => {
         setLoading(true);
-        const response = await fetch('customers', {
-            method: 'POST',
-            headers: {
-                'Accept': 'application/json',
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify({ name: customerName, address: customerAddress })
-        });
-        const newData = await response.json();
+        const newData = await addCustomer(customerName, customerAddress);
+        //handle error
         setData([...data, newData]);
         setLoading(false);
         clearForm();
     }
 
-    const _handleEdit = async (id, newName, newAddress) => {
+    const _handleEdit = async (id, name, address) => {
         setLoading(true);
-        const response = await fetch('customers/' + id, {
-            method: 'PUT',
-            headers: {
-                'Accept': 'application/json',
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify({ id: id, name: newName, address: newAddress })
-        });
+        const response = await editCustomer(id, name, address);
         if (response.status === 204) {
-            setData(data.map(d => (d.id === id ? { 'id': id, 'name': newName, 'address': newAddress } : d)));
+            setData(data.map(d => (d.id === id ? { 'id': id, 'name': name, 'address': address } : d)));
         }
         setLoading(false);
     }
 
     const _handleDelete = async (id) => {
-        console.log('delete: ' + id);
         setLoading(true);
-/*        const response = await fetch('customers/' + id, {
-            method: 'PUT',
-            headers: {
-                'Accept': 'application/json',
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify({ id: id, name: newName, address: newAddress })
-        });
-        if (response.status === 204) {
-            setData(data.map(d => (d.id === id ? { 'id': id, 'name': newName, 'address': newAddress } : d)));
-        }*/
+        const response = await deleteCustomer(id);
+
+        if (response.status === 200) {
+            setData(data.filter(d => d.id !== id));
+        }
         setLoading(false);
     }
 
