@@ -1,6 +1,6 @@
-﻿const BASE_URL = 'api/customers';
+﻿const BASE_URL = 'api/sales';
 
-export const fetchCustomer = async (pageSize, pageIndex) => {
+export const fetchSale = async (pageSize, pageIndex) => {
     let params = {
         "pageSize": pageSize,
         "pageIndex": pageIndex,
@@ -15,7 +15,7 @@ export const fetchCustomer = async (pageSize, pageIndex) => {
     return await response.json();
 }
 
-export const deleteCustomer = async (id) => {
+export const deleteSale = async (id) => {
     const response = await fetch(BASE_URL + '/' + id, {
         method: 'DELETE',
         headers: {
@@ -27,7 +27,7 @@ export const deleteCustomer = async (id) => {
     return response;
 }
 
-export const editCustomer = async (data) => {
+export const editSale = async (data) => {
     const response = await fetch(BASE_URL + '/' + data.id, {
         method: 'PUT',
         headers: {
@@ -40,7 +40,7 @@ export const editCustomer = async (data) => {
     return response;
 }
 
-export const addCustomer = async (data) => {
+export const addSale = async (data) => {
     const response = await fetch(BASE_URL, {
         method: 'POST',
         headers: {

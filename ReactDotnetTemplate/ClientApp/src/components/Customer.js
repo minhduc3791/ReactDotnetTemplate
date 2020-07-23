@@ -50,7 +50,7 @@ const Customer = () => {
 
     const _handleEdit = async (id, name, address) => {
         _setLoading(true);
-        const response = await editCustomer(id, name, address);
+        const response = await editCustomer({ id, name, address });
         if (response.status === 204) {
             _setData(data.map(d => (d.id === id ? { 'id': id, 'name': name, 'address': address } : d)));
         }
@@ -76,12 +76,12 @@ const Customer = () => {
 
     return (
         <>
-            <IAddData setLoading={_setLoading} addData={_addData} />
+            <IAddData setLoading={_setLoading} addData={_addData} modelName="Customer" />
             
             {loading
                 ? <p><em>Loading...</em></p>
                 : <>
-                    <ITable data={data} column={column} direction={direction} handleSort={_handleSort} handleEdit={_handleEdit} handleDelete={_handleDelete} />
+                    <ITable modelName="Customer" data={data} column={column} direction={direction} handleSort={_handleSort} handleEdit={_handleEdit} handleDelete={_handleDelete} />
                     <IPaging pageSize={pageSize} pageIndex={pageIndex} setPageIndex={_setPageIndex} setPageSize={_setPageSize}
                         totalPages={totalPages} hasPreviousPage={hasPreviousPage} hasNextPage={hasNextPage} />
                 </>

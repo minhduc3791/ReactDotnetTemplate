@@ -1,59 +1,93 @@
-import React, { Component } from 'react';
+import React, { useState, useEffect } from 'react';
 
-export class Store extends Component {
-  static displayName = Store.name;
+import ITable from './ITable'
+import IPaging from './IPaging';
+import IAddData from './IAddData';
 
-  constructor(props) {
-    super(props);
-    this.state = { forecasts: [], loading: true };
-  }
+import { fetchStore, editStore, deleteStore } from 'services/storeServices';
 
-  componentDidMount() {
-    this.populateWeatherData();
-  }
+const SORT_DIRECTION = {
+    'ascending': 1,
+    'descending': -1,
+};
 
-  static renderForecastsTable(forecasts) {
+const Store = () => {
+    const [data, _setData] = useState([]);
+    const [loading, _setLoading] = useState(true);
+    const [column, setColumn] = useState(null);
+    const [direction, setDirection] = useState(null);
+    const [pageSize, _setPageSize] = useState(5);
+    const [pageIndex, _setPageIndex] = useState(1);
+    const [hasNextPage, setHasNextPage] = useState(false);
+    const [hasPreviousPage, setHasPreviousPage] = useState(false);
+    const [totalPages, setTotalPages] = useState(1);
+
+    const _sortArray = (arr, sortProp, sortDirection) => {
+        return [...arr].sort((a, b) => (b[sortProp].localeCompare(a[sortProp]) === sortDirection ? 1 : -1));
+    }
+
+    useEffect(() => {
+        if (data.length > 0 && column !== null && direction !== null) {
+            _setData(_sortArray(data, column, SORT_DIRECTION[direction]));
+        }
+    }, [column, direction])
+
+    const _handleSort = (clickedColumn) => {
+        setDirection(direction === 'ascending' ? 'descending' : 'ascending');
+        setColumn(clickedColumn);
+    }
+
+    const fetchData = async () => {
+        const paginatedData = await fetchStore(pageSize, pageIndex);
+        //handle error
+
+        _setData(paginatedData.data);
+        setHasNextPage(paginatedData.hasNextPage);
+        setHasPreviousPage(paginatedData.hasPreviousPage);
+        setTotalPages(paginatedData.totalPages);
+        _setLoading(false);
+    }
+
+    const _handleEdit = async (id, name, address) => {
+        _setLoading(true);
+        const response = await editStore({id, name, address});
+        if (response.status === 204) {
+            _setData(data.map(d => (d.id === id ? { id, name, address } : d)));
+        }
+        _setLoading(false);
+    }
+
+    const _handleDelete = async (id) => {
+        _setLoading(true);
+        const response = await deleteStore(id);
+        if (response.status === 200) {
+            _setData(data.filter(d => d.id !== id));
+        }
+        _setLoading(false);
+    }
+
+    const _addData = (newData) => {
+        _setData([...data, newData]);
+    }
+
+    useEffect(() => {
+        fetchData();
+    }, [pageSize, pageIndex])
+
     return (
-      <table className='table table-striped' aria-labelledby="tabelLabel">
-        <thead>
-          <tr>
-            <th>Date</th>
-            <th>Temp. (C)</th>
-            <th>Temp. (F)</th>
-            <th>Summary</th>
-          </tr>
-        </thead>
-        <tbody>
-          {forecasts.map(forecast =>
-            <tr key={forecast.date}>
-              <td>{forecast.date}</td>
-              <td>{forecast.temperatureC}</td>
-              <td>{forecast.temperatureF}</td>
-              <td>{forecast.summary}</td>
-            </tr>
-          )}
-        </tbody>
-      </table>
+        <>
+            <IAddData setLoading={_setLoading} addData={_addData} modelName="Store" />
+
+            {loading
+                ? <p><em>Loading...</em></p>
+                : <>
+                    <ITable modelName="Store" data={data} column={column} direction={direction} handleSort={_handleSort} handleEdit={_handleEdit} handleDelete={_handleDelete} />
+                    <IPaging pageSize={pageSize} pageIndex={pageIndex} setPageIndex={_setPageIndex} setPageSize={_setPageSize}
+                        totalPages={totalPages} hasPreviousPage={hasPreviousPage} hasNextPage={hasNextPage} />
+                </>
+            }
+        </>
     );
-  }
-
-  render() {
-    let contents = this.state.loading
-      ? <p><em>Loading...</em></p>
-      : Store.renderForecastsTable(this.state.forecasts);
-
-    return (
-      <div>
-        <h1 id="tabelLabel" >Weather forecast</h1>
-        <p>This component demonstrates fetching data from the server.</p>
-        {contents}
-      </div>
-    );
-  }
-
-  async populateWeatherData() {
-    const response = await fetch('api/stores');
-    const data = await response.json();
-    this.setState({ forecasts: data, loading: false });
-  }
 }
+
+export default Store;

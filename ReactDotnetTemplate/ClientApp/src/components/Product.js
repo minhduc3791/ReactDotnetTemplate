@@ -1,60 +1,94 @@
-import React, { Component } from 'react';
+import React, { useState, useEffect } from 'react';
 
-export class Product extends Component {
-    static displayName = Product.name;
+import ITable from './ITable'
+import IPaging from './IPaging';
+import IAddData from './IAddData';
 
-    constructor(props) {
-        super(props);
-        this.state = { forecasts: [], loading: true };
+import { fetchProduct, editProduct, deleteProduct } from '../services/productServices';
+
+const SORT_DIRECTION = {
+    'ascending': 1,
+    'descending': -1,
+};
+
+const Product = () => {
+    const [data, _setData] = useState([]);
+    const [loading, _setLoading] = useState(true);
+    const [column, setColumn] = useState(null);
+    const [direction, setDirection] = useState(null);
+    const [pageSize, _setPageSize] = useState(5);
+    const [pageIndex, _setPageIndex] = useState(1);
+    const [hasNextPage, setHasNextPage] = useState(false);
+    const [hasPreviousPage, setHasPreviousPage] = useState(false);
+    const [totalPages, setTotalPages] = useState(1);
+
+    const _sortArray = (arr, sortProp, sortDirection) => {
+        return [...arr].sort((a, b) => (b[sortProp].localeCompare(a[sortProp]) === sortDirection ? 1 : -1));
     }
 
-    componentDidMount() {
-        this.populateWeatherData();
+    useEffect(() => {
+        if (data.length > 0 && column !== null && direction !== null) {
+            _setData(_sortArray(data, column, SORT_DIRECTION[direction]));
+        }
+    }, [column, direction])
+
+    const _handleSort = (clickedColumn) => {
+        setDirection(direction === 'ascending' ? 'descending' : 'ascending');
+        setColumn(clickedColumn);
     }
 
-    static renderForecastsTable(forecasts) {
-        return (
-            <table className='table table-striped' aria-labelledby="tabelLabel">
-                <thead>
-                    <tr>
-                        <th>Date</th>
-                        <th>Temp. (C)</th>
-                        <th>Temp. (F)</th>
-                        <th>Summary</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    {forecasts.map(forecast =>
-                        <tr key={forecast.date}>
-                            <td>{forecast.date}</td>
-                            <td>{forecast.temperatureC}</td>
-                            <td>{forecast.temperatureF}</td>
-                            <td>{forecast.summary}</td>
-                        </tr>
-                    )}
-                </tbody>
-            </table>
-        );
+    const fetchData = async () => {
+        const paginatedData = await fetchProduct(pageSize, pageIndex);
+        console.log(paginatedData);
+        //handle error
+
+        _setData(paginatedData.data);
+        setHasNextPage(paginatedData.hasNextPage);
+        setHasPreviousPage(paginatedData.hasPreviousPage);
+        setTotalPages(paginatedData.totalPages);
+        _setLoading(false);
     }
 
-    render() {
-        let contents = this.state.loading
-            ? <p><em>Loading...</em></p>
-            : Product.renderForecastsTable(this.state.forecasts);
-
-        return (
-            <div>
-                <h1 id="tabelLabel" >Products</h1>
-                <p>This component demonstrates fetching data from the server.</p>
-                {contents}
-            </div>
-        );
+    const _handleEdit = async (id, name, price) => {
+        _setLoading(true);
+        const response = await editProduct({id, name, price});
+        if (response.status === 204) {
+            _setData(data.map(d => (d.id === id ? { id, name, price } : d)));
+        }
+        _setLoading(false);
     }
 
-    async populateWeatherData() {
-        const response = await fetch('api/products/');
-        const data = await response.json();
-        console.log(data);
-        this.setState({ forecasts: data, loading: false });
+    const _handleDelete = async (id) => {
+        _setLoading(true);
+        const response = await deleteProduct(id);
+        if (response.status === 200) {
+            _setData(data.filter(d => d.id !== id));
+        }
+        _setLoading(false);
     }
+
+    const _addData = (newData) => {
+        _setData([...data, newData]);
+    }
+
+    useEffect(() => {
+        fetchData();
+    }, [pageSize, pageIndex])
+
+    return (
+        <>
+            <IAddData setLoading={_setLoading} addData={_addData} modelName="Product" />
+
+            {loading
+                ? <p><em>Loading...</em></p>
+                : <>
+                    <ITable modelName="Product" data={data} column={column} direction={direction} handleSort={_handleSort} handleEdit={_handleEdit} handleDelete={_handleDelete} />
+                    <IPaging pageSize={pageSize} pageIndex={pageIndex} setPageIndex={_setPageIndex} setPageSize={_setPageSize}
+                        totalPages={totalPages} hasPreviousPage={hasPreviousPage} hasNextPage={hasNextPage} />
+                </>
+            }
+        </>
+    );
 }
+
+export default Product;

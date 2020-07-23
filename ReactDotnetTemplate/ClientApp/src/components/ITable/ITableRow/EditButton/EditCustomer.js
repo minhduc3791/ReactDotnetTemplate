@@ -1,7 +1,9 @@
 ﻿import React, { useState, useEffect } from 'react';
 import { Button, Icon, Modal, Input, Form } from 'semantic-ui-react'
 
-const EditButton = ({ id, name, address, handleEdit }) => {
+const EditCustomer = ({ data, handleEdit }) => {
+    const { id, name, address } = data;
+
     const [openModal, setOpenModal] = useState(false);
     const [currentName, setCurrentName] = useState(name);
     const [currentAddress, setCurrentAddress] = useState(address);
@@ -21,7 +23,7 @@ const EditButton = ({ id, name, address, handleEdit }) => {
                 onClick={() => setOpenModal(true)}>
                 <Icon name='edit' />
                 Edit</Button>} centered>
-            <Modal.Header>Create customer</Modal.Header>
+            <Modal.Header>Edit customer</Modal.Header>
             <Modal.Content>
                 <Form>
                     <Form.Field>
@@ -42,4 +44,4 @@ const EditButton = ({ id, name, address, handleEdit }) => {
     )
 }
 
-export default EditButton;
+export default EditCustomer;

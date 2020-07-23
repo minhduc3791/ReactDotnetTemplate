@@ -10,7 +10,7 @@ using ReactDotnetTemplate.Models;
 
 namespace ReactDotnetTemplate.Controllers
 {
-    [Route("[controller]")]
+    [Route("api/[controller]")]
     [ApiController]
     public class StoresController : ControllerBase
     {
@@ -23,9 +23,11 @@ namespace ReactDotnetTemplate.Controllers
 
         // GET: api/Stores
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<Store>>> GetStore()
+        public async Task<ActionResult<PaginatedData<Store>>> GetStore(int? pageSize, int? pageIndex)
         {
-            return await _context.Store.ToListAsync();
+            int defaultPageIndex = 1;
+            int defaultPageSize = 5;
+            return await PaginatedData<Store>.CreateAsync(_context.Store.AsNoTracking(), pageIndex ?? defaultPageIndex, pageSize ?? defaultPageSize); ;
         }
 
         // GET: api/Stores/5

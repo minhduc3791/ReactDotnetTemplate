@@ -2,7 +2,7 @@
 import { Button, Modal, Form, Icon, Input } from 'semantic-ui-react'
 import { addCustomer } from 'services/customerServices';
 
-const IAddData = ({ setLoading, addData }) => {
+const AddCustomer = ({ setLoading, addData }) => {
     const [modalOpen, setModalOpen] = useState(false);
     const [disabled, setDisabled] = useState(true);
     const [customerName, setCustomerName] = useState('');
@@ -14,7 +14,7 @@ const IAddData = ({ setLoading, addData }) => {
         //handle error
         addData(newData);
         setLoading(false);
-        clearForm();
+        setModalOpen(false);
     }
 
     useEffect(() => {
@@ -25,14 +25,8 @@ const IAddData = ({ setLoading, addData }) => {
         }
     }, [customerName, customerAddress]);
 
-    const clearForm = () => {
-        setCustomerName('');
-        setCustomerAddress('');
-        setModalOpen(false);
-    }
-
     return (
-        <Modal size="small" open={modalOpen} onClose={clearForm}
+        <Modal size="small" open={modalOpen} onClose={() => { setModalOpen(false) }}
             trigger={<Button primary onClick={() => { setModalOpen(true) }}>New Customer</Button>} centered>
             <Modal.Header>Create customer</Modal.Header>
             <Modal.Content>
@@ -48,11 +42,11 @@ const IAddData = ({ setLoading, addData }) => {
                 </Form>
             </Modal.Content>
             <Modal.Actions>
-                <Button color="black" onClick={clearForm}>Cancel</Button>
+                <Button color="black" onClick={() => { setModalOpen(false) }}>Cancel</Button>
                 <Button disabled={disabled} color="green" icon labelPosition="right" onClick={_addCustomer}>Create<Icon name="check" /></Button>
             </Modal.Actions>
         </Modal>
     )
 }
 
-export default IAddData;
+export default AddCustomer;
