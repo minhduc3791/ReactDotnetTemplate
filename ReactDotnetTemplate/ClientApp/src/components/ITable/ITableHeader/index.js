@@ -9,16 +9,12 @@ const ITableHeader = ({ modelName, column, direction, handleSort }) => {
         switch (modelName) {
             case "Customer":
                 return <CustomerHeader column={column} direction={direction} handleSort={handleSort} />
-                break;
             case "Product":
                 return <ProductHeader column={column} direction={direction} handleSort={handleSort} />
-                break;
             case "Store":
                 return <StoreHeader column={column} direction={direction} handleSort={handleSort} />
-                break;
             case "Sale":
                 return <SaleHeader column={column} direction={direction} handleSort={handleSort} />
-                break;
             default:
                 return <CustomerHeader column={column} direction={direction} handleSort={handleSort} />
         }

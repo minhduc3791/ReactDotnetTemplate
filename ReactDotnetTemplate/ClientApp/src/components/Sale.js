@@ -1,10 +1,13 @@
 import React, { useState, useEffect } from 'react';
 
 import ITable from './ITable'
-import IPaging from './IPaging';
-import IAddData from './IAddData';
+import IPaging from './IPaging'
+import IAddData from './IAddData'
 
-import { fetchSale, editSale, deleteSale } from 'services/saleServices';
+import { fetchSale, editSale, deleteSale } from 'services/saleServices'
+import { fetchCustomer } from 'services/customerServices'
+import { fetchProduct } from 'services/productServices'
+import { fetchStore } from 'services/storeServices'
 
 const SORT_DIRECTION = {
     'ascending': 1,
@@ -21,6 +24,11 @@ const Sale = () => {
     const [hasNextPage, setHasNextPage] = useState(false);
     const [hasPreviousPage, setHasPreviousPage] = useState(false);
     const [totalPages, setTotalPages] = useState(1);
+
+    const [customers, setCustomers] = useState([]);
+    const [products, setProducts] = useState([]);
+    const [stores, setStores] = useState([]);
+    const [isFetching, setIsFetching] = useState(false);
 
     const _sortArray = (arr, sortProp, sortDirection) => {
         return [...arr].sort((a, b) => (b[sortProp].localeCompare(a[sortProp]) === sortDirection ? 1 : -1));
@@ -74,14 +82,34 @@ const Sale = () => {
         fetchData();
     }, [pageSize, pageIndex])
 
+    const fetchRelatedData = async () => {
+        setIsFetching(true);
+        const customers = await fetchCustomer(pageSize, pageIndex);
+        const products = await fetchProduct(pageSize, pageIndex);
+        const stores = await fetchStore(pageSize, pageIndex);
+
+        setCustomers(customers.data);
+        setProducts(products.data);
+        setStores(stores.data);
+
+        console.log(customers);
+        setIsFetching(false);
+    }
+
+    useEffect(() => {
+        fetchRelatedData();
+    }, [])
+
     return (
         <>
-            <IAddData setLoading={_setLoading} addData={_addData} modelName="Sale" />
+            <IAddData isFetching={isFetching} setLoading={_setLoading} addData={_addData} modelName="Sale" customers={customers} products={products} stores={stores} />
 
             {loading
                 ? <p><em>Loading...</em></p>
                 : <>
-                    <ITable modelName="Sale" data={data} column={column} direction={direction} handleSort={_handleSort} handleEdit={_handleEdit} handleDelete={_handleDelete} />
+                    <ITable modelName="Sale" data={data} column={column} direction={direction}
+                        customers={customers} products={products} stores={stores}
+                        handleSort={_handleSort} handleEdit={_handleEdit} handleDelete={_handleDelete} />
                     <IPaging pageSize={pageSize} pageIndex={pageIndex} setPageIndex={_setPageIndex} setPageSize={_setPageSize}
                         totalPages={totalPages} hasPreviousPage={hasPreviousPage} hasNextPage={hasNextPage} />
                 </>
