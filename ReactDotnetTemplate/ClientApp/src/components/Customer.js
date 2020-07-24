@@ -48,11 +48,12 @@ const Customer = () => {
         _setLoading(false);
     }
 
-    const _handleEdit = async (id, name, address) => {
+    const _handleEdit = async (newData) => {
+        const { id } = newData;
         _setLoading(true);
-        const response = await editCustomer({ id, name, address });
+        const response = await editCustomer(newData);
         if (response.status === 204) {
-            _setData(data.map(d => (d.id === id ? { 'id': id, 'name': name, 'address': address } : d)));
+            _setData(data.map(d => (d.id === id ? newData : d)));
         }
         _setLoading(false);
     }

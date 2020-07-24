@@ -39,7 +39,6 @@ const Product = () => {
 
     const fetchData = async () => {
         const paginatedData = await fetchProduct(pageSize, pageIndex);
-        console.log(paginatedData);
         //handle error
 
         _setData(paginatedData.data);
@@ -49,11 +48,12 @@ const Product = () => {
         _setLoading(false);
     }
 
-    const _handleEdit = async (id, name, price) => {
+    const _handleEdit = async (newData) => {
+        const { id } = newData;
         _setLoading(true);
-        const response = await editProduct({id, name, price});
+        const response = await editProduct(newData);
         if (response.status === 204) {
-            _setData(data.map(d => (d.id === id ? { id, name, price } : d)));
+            _setData(data.map(d => (d.id === id ? newData : d)));
         }
         _setLoading(false);
     }

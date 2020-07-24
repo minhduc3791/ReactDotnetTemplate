@@ -11,19 +11,14 @@ const SaleRow = ({ data, handleEdit, handleDelete, relatedData }) => {
     const productName = (products && products.length) > 0 ? products.filter(c => c.id === productId)[0].name : ''
     const storeName = (stores && stores.length > 0) ? stores.filter(c => c.id === storeId)[0].name : ''
 
-    const log = () => {
-        console.log(relatedData);
-    }
-
     return (
         <Table.Row key={id}>
-            {log()}
             <Table.Cell>{customerName}</Table.Cell>
             <Table.Cell>{productName}</Table.Cell>
             <Table.Cell>{storeName}</Table.Cell>
-            <Table.Cell>{storeName}</Table.Cell>
+            <Table.Cell>{dateSold}</Table.Cell>
             <Table.Cell>
-                <EditButton modelName="Sale" data={data} handleEdit={handleEdit} />
+                <EditButton modelName="Sale" data={data} relatedData={relatedData} handleEdit={handleEdit} />
             </Table.Cell>
             <Table.Cell>
                 <DeleteButton id={id} handleDelete={handleDelete} />

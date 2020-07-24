@@ -38,7 +38,7 @@ const EditStore = ({ data, handleEdit }) => {
             </Modal.Content>
             <Modal.Actions>
                 <Button color="black" onClick={() => { setOpenModal(false) }}>Cancel</Button>
-                <Button disabled={disabled} color="green" icon labelPosition="right" onClick={() => handleEdit(id, currentName, currentAddress)}>Edit<Icon name="check" /></Button>
+                <Button disabled={disabled} color="green" icon labelPosition="right" onClick={() => handleEdit({ id: id, name: currentName, address: currentAddress })}>Edit<Icon name="check" /></Button>
             </Modal.Actions>
         </Modal>
     )

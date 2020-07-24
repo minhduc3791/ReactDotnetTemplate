@@ -28,6 +28,7 @@ export const deleteSale = async (id) => {
 }
 
 export const editSale = async (data) => {
+    console.log(data);
     const response = await fetch(BASE_URL + '/' + data.id, {
         method: 'PUT',
         headers: {

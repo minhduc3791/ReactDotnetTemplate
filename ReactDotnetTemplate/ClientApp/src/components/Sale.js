@@ -55,8 +55,6 @@ const Sale = () => {
         setCustomers(customers.data);
         setProducts(products.data);
         setStores(stores.data);
-        console.log(paginatedData);
-        
 
         _setData(paginatedData.data);
         setHasNextPage(paginatedData.hasNextPage);
@@ -65,11 +63,12 @@ const Sale = () => {
         _setLoading(false);
     }
 
-    const _handleEdit = async (id, name, address) => {
+    const _handleEdit = async (newData) => {
+        const { id } = newData;
         _setLoading(true);
-        const response = await editSale(id, name, address);
+        const response = await editSale(newData);
         if (response.status === 204) {
-            _setData(data.map(d => (d.id === id ? { 'id': id, 'name': name, 'address': address } : d)));
+            _setData(data.map(d => (d.id === id ? newData : d)));
         }
         _setLoading(false);
     }
@@ -84,7 +83,6 @@ const Sale = () => {
     }
 
     const _addData = (newData) => {
-        console.log('newData: ', newData);
         _setData([...data, newData]);
     }
 
