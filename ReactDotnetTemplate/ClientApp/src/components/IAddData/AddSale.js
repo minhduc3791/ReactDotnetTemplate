@@ -1,30 +1,31 @@
 ﻿import React, { useState, useEffect } from 'react';
 import { Button, Modal, Form, Icon, Input, Dropdown } from 'semantic-ui-react'
-import { addProduct } from 'services/productServices';
+import { addSale } from 'services/saleServices';
 
 const AddSale = ({ setLoading, addData, customers, products, stores, isFetching }) => {
     const [modalOpen, setModalOpen] = useState(false);
     const [disabled, setDisabled] = useState(true);
-    const [customer, setCustomer] = useState(-1);
-    const [product, setProduct] = useState(-1);
-    const [store, setStore] = useState(-1);
+    const [customerId, setCustomerId] = useState(-1);
+    const [productId, setProductId] = useState(-1);
+    const [storeId, setStoreId] = useState(-1);
+    const [dateSold, setDateSold] = useState('');
 
     const _addData = async () => {
         setLoading(true);
-        //const newData = await addProduct(name, price);
+        const newData = await addSale({customerId, productId, storeId, dateSold});
         //handle error
-        //addData(newData);
+        addData(newData);
         setLoading(false);
         setModalOpen(false);
     }
 
     useEffect(() => {
-        if (customer !== -1 && product !== -1 && store !== -1) {
+        if (customerId !== -1 && productId !== -1 && storeId !== -1) {
             setDisabled(false);
         } else {
             setDisabled(true);
         }
-    }, [customer, product, store]);
+    }, [customerId, productId, storeId]);
 
     return (
         <Modal size="small" open={modalOpen} onClose={() => { setModalOpen(false) }}
@@ -33,39 +34,43 @@ const AddSale = ({ setLoading, addData, customers, products, stores, isFetching 
             <Modal.Content>
                 <Form>
                     <Form.Field>
+                        <label>Date Sold</label>
+                        <Input value={dateSold} onChange={(e) => { setDateSold(e.target.value)}} />
+                    </Form.Field>
+                    <Form.Field>
                         <label>Customer</label>
                         <Dropdown
-                            onChange={(e, { value }) => { setCustomer(value) }}
+                            onChange={(e, { value }) => { setCustomerId(value) }}
                             fluid
                             options={customers.length > 0 ? customers.map(c => ({ ...c, key: c.id, text: c.name, value: c.id })) : []}
                             search
                             selection
                             placeholder="Select Customer"
-                            value={customer}
+                            value={customerId}
                         />
                     </Form.Field>
                     <Form.Field>
                         <label>Product</label>
                         <Dropdown
-                            onChange={(e, { value }) => { setProduct(value) }}
+                            onChange={(e, { value }) => { setProductId(value) }}
                             fluid
                             options={products.length > 0 ? products.map(c => ({ ...c, key: c.id, text: c.name, value: c.id })) : []}
                             search
                             selection
                             placeholder="Select Product"
-                            value={product}
+                            value={productId}
                         />
                     </Form.Field>
                     <Form.Field>
                         <label>Store</label>
                         <Dropdown
-                            onChange={(e, { value }) => { setStore(value) }}
+                            onChange={(e, { value }) => { setStoreId(value) }}
                             fluid
                             options={stores.length > 0 ? stores.map(c => ({ ...c, key: c.id, text: c.name, value: c.id })) : []}
                             search
                             selection
                             placeholder="Select Store"
-                            value={store}
+                            value={storeId}
                         />
                     </Form.Field>
                 </Form>

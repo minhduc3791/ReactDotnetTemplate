@@ -41,6 +41,7 @@ export const editSale = async (data) => {
 }
 
 export const addSale = async (data) => {
+    console.log(data);
     const response = await fetch(BASE_URL, {
         method: 'POST',
         headers: {

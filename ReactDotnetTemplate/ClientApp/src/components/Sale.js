@@ -47,7 +47,16 @@ const Sale = () => {
 
     const fetchData = async () => {
         const paginatedData = await fetchSale(pageSize, pageIndex);
+        const customers = await fetchCustomer();
+        const products = await fetchProduct();
+        const stores = await fetchStore();
         //handle error
+
+        setCustomers(customers.data);
+        setProducts(products.data);
+        setStores(stores.data);
+        console.log(paginatedData);
+        
 
         _setData(paginatedData.data);
         setHasNextPage(paginatedData.hasNextPage);
@@ -75,30 +84,13 @@ const Sale = () => {
     }
 
     const _addData = (newData) => {
+        console.log('newData: ', newData);
         _setData([...data, newData]);
     }
 
     useEffect(() => {
         fetchData();
     }, [pageSize, pageIndex])
-
-    const fetchRelatedData = async () => {
-        setIsFetching(true);
-        const customers = await fetchCustomer(pageSize, pageIndex);
-        const products = await fetchProduct(pageSize, pageIndex);
-        const stores = await fetchStore(pageSize, pageIndex);
-
-        setCustomers(customers.data);
-        setProducts(products.data);
-        setStores(stores.data);
-
-        console.log(customers);
-        setIsFetching(false);
-    }
-
-    useEffect(() => {
-        fetchRelatedData();
-    }, [])
 
     return (
         <>
@@ -107,8 +99,7 @@ const Sale = () => {
             {loading
                 ? <p><em>Loading...</em></p>
                 : <>
-                    <ITable modelName="Sale" data={data} column={column} direction={direction}
-                        customers={customers} products={products} stores={stores}
+                    <ITable modelName="Sale" data={data} relatedData={{ customers, products, stores }} column={column} direction={direction}
                         handleSort={_handleSort} handleEdit={_handleEdit} handleDelete={_handleDelete} />
                     <IPaging pageSize={pageSize} pageIndex={pageIndex} setPageIndex={_setPageIndex} setPageSize={_setPageSize}
                         totalPages={totalPages} hasPreviousPage={hasPreviousPage} hasNextPage={hasNextPage} />

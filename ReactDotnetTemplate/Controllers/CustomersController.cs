@@ -26,7 +26,7 @@ namespace ReactDotnetTemplate.Controllers
         public async Task<ActionResult<PaginatedData<Customer>>> GetCustomer(int? pageSize, int? pageIndex)
         {
             int defaultPageIndex = 1;
-            int defaultPageSize = 5;
+            int defaultPageSize = -1;
             return await PaginatedData<Customer>.CreateAsync(_context.Customer.AsNoTracking(), pageIndex ?? defaultPageIndex, pageSize ?? defaultPageSize); ;
         }
 

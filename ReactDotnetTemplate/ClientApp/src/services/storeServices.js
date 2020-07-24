@@ -1,17 +1,20 @@
 ﻿const BASE_URL = 'api/stores';
 
 export const fetchStore = async (pageSize, pageIndex) => {
-    let params = {
-        "pageSize": pageSize,
-        "pageIndex": pageIndex,
-    };
+    let queryString = '';
 
-    let queryString = Object.keys(params)
-        .map(k => encodeURIComponent(k) + '=' + encodeURIComponent(params[k]))
-        .join('&');
+    if (pageSize && pageIndex) {
+        let params = {
+            "pageSize": pageSize,
+            "pageIndex": pageIndex,
+        };
 
+        queryString = '?' + Object.keys(params)
+            .map(k => encodeURIComponent(k) + '=' + encodeURIComponent(params[k]))
+            .join('&');
+    }
 
-    const response = await fetch(BASE_URL + '?' + queryString);
+    const response = await fetch(BASE_URL + queryString);
     return await response.json();
 }
 
