@@ -6,26 +6,26 @@ const SaleHeader = ({ column, direction, handleSort }) => {
         <Table.Header>
             <Table.Row>
                 <Table.HeaderCell
-                    sorted={column === 'customer' ? direction : null}
-                    onClick={() => { handleSort('customer') }}
+                    sorted={column === 'customers' ? direction : null}
+                    onClick={() => { handleSort('customers') }}
                 >
                     Customer
                         </Table.HeaderCell>
                 <Table.HeaderCell
-                    sorted={column === 'product' ? direction : null}
-                    onClick={() => { handleSort('product') }}
+                    sorted={column === 'products' ? direction : null}
+                    onClick={() => { handleSort('products') }}
                 >
                     Product
                         </Table.HeaderCell>
                 <Table.HeaderCell
-                    sorted={column === 'store' ? direction : null}
-                    onClick={() => { handleSort('store') }}
+                    sorted={column === 'stores' ? direction : null}
+                    onClick={() => { handleSort('stores') }}
                 >
                     Store
                         </Table.HeaderCell>
                 <Table.HeaderCell
-                    sorted={column === 'date' ? direction : null}
-                    onClick={() => { handleSort('date') }}
+                    sorted={column === 'dateSold' ? direction : null}
+                    onClick={() => { handleSort('dateSold') }}
                 >
                     Date Sold
                         </Table.HeaderCell>

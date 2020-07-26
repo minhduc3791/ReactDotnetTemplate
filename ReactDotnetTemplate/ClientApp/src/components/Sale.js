@@ -31,7 +31,31 @@ const Sale = () => {
     const [isFetching, setIsFetching] = useState(false);
 
     const _sortArray = (arr, sortProp, sortDirection) => {
-        return [...arr].sort((a, b) => (b[sortProp].localeCompare(a[sortProp]) === sortDirection ? 1 : -1));
+        let idString = ""
+        let sortArray = [];
+
+        switch (sortProp) {
+            case 'customers':
+                idString = 'customerId';
+                sortArray = customers;
+                break;
+            case 'products':
+                idString = 'productId';
+                sortArray = products;
+                break;
+            case 'stores':
+                idString = 'storeId';
+                sortArray = stores;
+                break;
+            default:
+                idString = 'customerId';
+                break;
+        }
+        return [...arr].sort((a, b) => {
+            const stringA = sortProp === 'dateSold' ? a[sortProp] : sortArray.filter(s => s.id === a[idString])[0].name;
+            const stringB = sortProp === 'dateSold' ? b[sortProp] : sortArray.filter(s => s.id === b[idString])[0].name;
+            return (stringB.localeCompare(stringA) === 0 || stringB.localeCompare(stringA) === sortDirection) ? 1 : -1
+        });
     }
 
     useEffect(() => {
@@ -47,20 +71,26 @@ const Sale = () => {
 
     const fetchData = async () => {
         const paginatedData = await fetchSale(pageSize, pageIndex);
-        const customers = await fetchCustomer();
-        const products = await fetchProduct();
-        const stores = await fetchStore();
         //handle error
-
-        setCustomers(customers.data);
-        setProducts(products.data);
-        setStores(stores.data);
+        fetchRelatedData();
 
         _setData(paginatedData.data);
         setHasNextPage(paginatedData.hasNextPage);
         setHasPreviousPage(paginatedData.hasPreviousPage);
         setTotalPages(paginatedData.totalPages);
         _setLoading(false);
+    }
+
+    const fetchRelatedData = async () => {
+        const customers = fetchCustomer();
+        const products = fetchProduct();
+        const stores = fetchStore();
+
+        await Promise.all([customers, products, stores]).then(([c, p, s]) => {
+            setCustomers(c.data);
+            setProducts(p.data);
+            setStores(s.data);
+        })
     }
 
     const _handleEdit = async (newData) => {
