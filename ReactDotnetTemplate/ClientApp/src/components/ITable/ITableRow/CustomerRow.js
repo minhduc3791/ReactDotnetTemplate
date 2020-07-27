@@ -3,7 +3,7 @@ import { Table } from 'semantic-ui-react'
 import EditButton from './EditButton';
 import DeleteButton from './DeleteButton';
 
-const CustomerRow = ({ data, handleEdit, handleDelete }) => {
+const CustomerRow = ({ data, modelName, handleEdit, handleDelete }) => {
     const { id, name, address } = data;
 
     return (
@@ -11,10 +11,10 @@ const CustomerRow = ({ data, handleEdit, handleDelete }) => {
             <Table.Cell>{name}</Table.Cell>
             <Table.Cell>{address}</Table.Cell>
             <Table.Cell>
-                <EditButton modelName="Customer" data={data} handleEdit={handleEdit} />
+                <EditButton modelName={modelName} data={data} handleEdit={handleEdit} />
             </Table.Cell>
             <Table.Cell>
-                <DeleteButton id={id} handleDelete={handleDelete} />
+                <DeleteButton id={id} modelName={modelName} handleDelete={handleDelete} />
             </Table.Cell>
         </Table.Row>
     )

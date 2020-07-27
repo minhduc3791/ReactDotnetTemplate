@@ -1,7 +1,7 @@
 ﻿import React, { useState } from 'react';
 import { Button, Icon, Modal } from 'semantic-ui-react'
 
-const DeleteButton = ({ id, handleDelete }) => {
+const DataDeleteButton = ({ id, modelName, handleDelete }) => {
     const [openModal, setOpenModal] = useState(false);
 
     return (
@@ -10,7 +10,7 @@ const DeleteButton = ({ id, handleDelete }) => {
                 onClick={() => setOpenModal(true)}>
                 <Icon name='delete' />
                 DELETE</Button>} centered>
-            <Modal.Header>Delete customer</Modal.Header>
+            <Modal.Header>Delete {modelName}</Modal.Header>
             <Modal.Content>
                 <h1>Are you sure?</h1>
             </Modal.Content>
@@ -22,4 +22,4 @@ const DeleteButton = ({ id, handleDelete }) => {
     )
 }
 
-export default DeleteButton;
+export default DataDeleteButton;

@@ -5,7 +5,7 @@ const EditSale = ({ data, handleEdit, relatedData }) => {
     const { customers, products, stores } = relatedData;
     const { id, customerId, productId, storeId, dateSold } = data;
 
-    const [openModal, setOpenModal] = useState(false);
+    const [modalOpen, setModalOpen] = useState(false);
     const [disabled, setDisabled] = useState(true);
     const [currentCustomerId, setCurrentCustomerId] = useState(customerId);
     const [currentProductId, setCurrentProductId] = useState(productId);
@@ -13,7 +13,7 @@ const EditSale = ({ data, handleEdit, relatedData }) => {
     const [currentDateSold, setCurrentDateSold] = useState(dateSold);
 
     const handleChangeDate = value => {
-        if (value.length === 0 || /[\d\/]+$/.test(value))
+        if (value.length === 0 || /[\d/]+$/.test(value))
             setCurrentDateSold(value);
     }
 
@@ -33,13 +33,13 @@ const EditSale = ({ data, handleEdit, relatedData }) => {
         var year = parseInt(parts[2], 10);
 
         // Check the ranges of month and year
-        if (year < 1000 || year > 3000 || month == 0 || month > 12)
+        if (year < 1000 || year > 3000 || month === 0 || month > 12)
             return false;
 
         var monthLength = [31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31];
 
         // Adjust for leap years
-        if (year % 400 == 0 || (year % 100 != 0 && year % 4 == 0))
+        if (year % 400 === 0 || (year % 100 !== 0 && year % 4 === 0))
             monthLength[1] = 29;
 
         // Check the range of the day
@@ -58,9 +58,9 @@ const EditSale = ({ data, handleEdit, relatedData }) => {
     }, [currentCustomerId, currentProductId, currentStoreId, currentDateSold]);
 
     return (
-        <Modal size="small" open={openModal} onClose={() => setOpenModal(false)}
+        <Modal size="small" open={modalOpen} onClose={() => setModalOpen(false)}
             trigger={<Button icon labelPosition='left' color="yellow"
-                onClick={() => setOpenModal(true)}>
+                onClick={() => setModalOpen(true)}>
                 <Icon name='edit' />
                 Edit</Button>} centered>
             <Modal.Header>Create customer</Modal.Header>
@@ -109,7 +109,7 @@ const EditSale = ({ data, handleEdit, relatedData }) => {
                 </Form>
             </Modal.Content>
             <Modal.Actions>
-                <Button color="black" onClick={() => { setOpenModal(false) }}>Cancel</Button>
+                <Button color="black" onClick={() => { setModalOpen(false) }}>Cancel</Button>
                 <Button disabled={disabled} color="green" icon labelPosition="right" onClick={() => handleEdit({ id: id, customerId: currentCustomerId, productId: currentProductId, storeId: currentStoreId, dateSold: currentDateSold })}>Edit<Icon name="check" /></Button>
             </Modal.Actions>
         </Modal>

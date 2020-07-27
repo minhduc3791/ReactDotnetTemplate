@@ -8,15 +8,15 @@ const ITableRow = ({ modelName, data, handleEdit, handleDelete, relatedData }) =
     const component = () => {
         switch (modelName) {
             case "Customer":
-                return <CustomerRow data={data} handleEdit={handleEdit} handleDelete={handleDelete} />
+                return <CustomerRow data={data} modelName={modelName} handleEdit={handleEdit} handleDelete={handleDelete} />
             case "Product":
-                return <ProductRow data={data} handleEdit={handleEdit} handleDelete={handleDelete} />
+                return <ProductRow data={data} modelName={modelName} handleEdit={handleEdit} handleDelete={handleDelete} />
             case "Store":
-                return <StoreRow data={data} handleEdit={handleEdit} handleDelete={handleDelete} />
+                return <StoreRow data={data} modelName={modelName} handleEdit={handleEdit} handleDelete={handleDelete} />
             case "Sale":
-                return <SaleRow data={data} relatedData={relatedData} handleEdit={handleEdit} handleDelete={handleDelete} />
+                return <SaleRow data={data} modelName={modelName} relatedData={relatedData} handleEdit={handleEdit} handleDelete={handleDelete} />
             default:
-                return <CustomerRow data={data} handleEdit={handleEdit} handleDelete={handleDelete} />
+                return <CustomerRow data={data} modelName={modelName} handleEdit={handleEdit} handleDelete={handleDelete} />
         }
     }
     return (

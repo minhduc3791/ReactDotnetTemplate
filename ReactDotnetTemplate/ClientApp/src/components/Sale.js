@@ -90,6 +90,8 @@ const Sale = () => {
             setCustomers(c.data);
             setProducts(p.data);
             setStores(s.data);
+        }).catch(error => {
+            console.log(error);
         })
     }
 

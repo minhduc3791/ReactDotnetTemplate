@@ -10,12 +10,19 @@ const AddCustomer = ({ setLoading, addData }) => {
 
     const _addCustomer = async () => {
         setLoading(true);
-        const newData = await addCustomer(customerName, customerAddress);
+        const newData = await addCustomer({ name: customerName, address: customerAddress });
         //handle error
         addData(newData);
         setLoading(false);
         setModalOpen(false);
     }
+
+    useEffect(() => {
+        if (modalOpen) {
+            setCustomerName('');
+            setCustomerAddress('');
+        }
+    }, [modalOpen])
 
     useEffect(() => {
         if (customerName && customerAddress && customerName.length > 0 && customerAddress.length > 0) {

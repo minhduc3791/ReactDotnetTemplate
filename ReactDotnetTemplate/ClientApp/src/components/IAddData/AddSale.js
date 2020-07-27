@@ -20,7 +20,7 @@ const AddSale = ({ setLoading, addData, customers, products, stores, isFetching 
     }
 
     const handleChangeDate = value => {
-        if (value.length === 0 || /[\d\/]+$/.test(value))
+        if (value.length === 0 || /[\d/]+$/.test(value))
             setDateSold(value);
     }
 
@@ -40,18 +40,27 @@ const AddSale = ({ setLoading, addData, customers, products, stores, isFetching 
         var year = parseInt(parts[2], 10);
 
         // Check the ranges of month and year
-        if (year < 1000 || year > 3000 || month == 0 || month > 12)
+        if (year < 1000 || year > 3000 || month === 0 || month > 12)
             return false;
 
         var monthLength = [31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31];
 
         // Adjust for leap years
-        if (year % 400 == 0 || (year % 100 != 0 && year % 4 == 0))
+        if (year % 400 === 0 || (year % 100 !== 0 && year % 4 === 0))
             monthLength[1] = 29;
 
         // Check the range of the day
         return day > 0 && day <= monthLength[month - 1];
     }
+
+    useEffect(() => {
+        if (modalOpen) {
+            setCustomerId(-1);
+            setProductId(-1);
+            setStoreId(-1);
+            setDateSold('');
+        }
+    }, [modalOpen])
 
     useEffect(() => {
         if (customerId !== -1 && productId !== -1 && storeId !== -1 && isValidDate(dateSold)) {

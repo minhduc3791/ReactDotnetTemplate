@@ -39,23 +39,28 @@ namespace ReactDotnetTemplate.DAO
 
             modelBuilder.Entity<Sales>(entity =>
             {
+                entity.Property(e => e.DateSold)
+                    .IsRequired()
+                    .HasMaxLength(50)
+                    .IsUnicode(false);
+
                 entity.HasOne(d => d.Customer)
                     .WithMany(p => p.Sales)
                     .HasForeignKey(d => d.CustomerId)
-                    .OnDelete(DeleteBehavior.ClientSetNull)
-                    .HasConstraintName("FK_Sales_Customer");
+                    .HasConstraintName("FK_Sales_Customer")
+                    .OnDelete(DeleteBehavior.Cascade);
 
                 entity.HasOne(d => d.Product)
                     .WithMany(p => p.Sales)
                     .HasForeignKey(d => d.ProductId)
-                    .OnDelete(DeleteBehavior.ClientSetNull)
-                    .HasConstraintName("FK_Sales_Product");
+                    .HasConstraintName("FK_Sales_Product")
+                    .OnDelete(DeleteBehavior.Cascade);
 
                 entity.HasOne(d => d.Store)
                     .WithMany(p => p.Sales)
                     .HasForeignKey(d => d.StoreId)
-                    .OnDelete(DeleteBehavior.ClientSetNull)
-                    .HasConstraintName("FK_Sales_Store");
+                    .HasConstraintName("FK_Sales_Store")
+                    .OnDelete(DeleteBehavior.Cascade);
             });
 
             modelBuilder.Entity<Store>(entity =>

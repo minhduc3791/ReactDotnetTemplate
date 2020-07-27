@@ -18,6 +18,13 @@ const AddStore = ({ setLoading, addData }) => {
     }
 
     useEffect(() => {
+        if (modalOpen) {
+            setName('');
+            setAddress('');
+        }
+    }, [modalOpen])
+
+    useEffect(() => {
         if (name && address && name.length > 0 && address.length > 0) {
             setDisabled(false);
         } else {

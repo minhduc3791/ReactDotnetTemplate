@@ -17,18 +17,37 @@ const AddProduct = ({ setLoading, addData }) => {
         setModalOpen(false);
     }
 
+    const isNum = value => {
+        return /^\d+$/.test(value);
+    }
+
+    const _handleChangePrice = value => {
+        if (isNum(value))
+            setPrice(value);
+    }
+
+    useEffect(() => {
+        if (modalOpen) {
+            setName('');
+            setPrice('');
+        }
+    }, [modalOpen]);
+
     useEffect(() => {
         if (name && price && name.length > 0 && price.length > 0) {
             setDisabled(false);
         } else {
-            setDisabled(true);
+            if (isNum(price))
+                setDisabled(true);
+            else
+                setDisabled(false);
         }
     }, [name, price]);
 
     return (
         <Modal size="small" open={modalOpen} onClose={() => { setModalOpen(false) }}
             trigger={<Button primary onClick={() => { setModalOpen(true) }}>New Product</Button>} centered>
-            <Modal.Header>Create customer</Modal.Header>
+            <Modal.Header>Create product</Modal.Header>
             <Modal.Content>
                 <Form>
                     <Form.Field>
@@ -37,7 +56,7 @@ const AddProduct = ({ setLoading, addData }) => {
                     </Form.Field>
                     <Form.Field>
                         <label>Price</label>
-                        <Input placeholder='Price' value={price} onChange={e => setPrice(e.target.value)} />
+                        <Input placeholder='Price' value={price} onChange={e => _handleChangePrice(e.target.value)} />
                     </Form.Field>
                 </Form>
             </Modal.Content>

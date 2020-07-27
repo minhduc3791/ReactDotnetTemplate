@@ -37,7 +37,9 @@ namespace ReactDotnetTemplate.DAO
         public static async Task<PaginatedData<T>> CreateAsync(IQueryable<T> source, int pageIndex, int pageSize)
         {
             var count = await source.CountAsync();
-            var items = await source.Skip((pageIndex - 1) * pageSize).Take(pageSize == -1 ? count : pageSize).ToListAsync();
+            int resultSize = pageSize == -1 ? count : pageSize;
+            resultSize = resultSize == 0 ? 1 : resultSize;
+            var items = await source.Skip((pageIndex - 1) * pageSize).Take(resultSize).ToListAsync();
             return new PaginatedData<T>(items, count, pageIndex, pageSize == -1 ? count : pageSize);
         }
     }
