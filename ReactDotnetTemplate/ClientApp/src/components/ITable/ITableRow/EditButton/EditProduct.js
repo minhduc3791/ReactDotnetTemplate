@@ -9,11 +9,23 @@ const EditProduct = ({ data, handleEdit }) => {
     const [currentPrice, setCurrentPrice] = useState(price);
     const [disabled, setDisabled] = useState(true);
 
+    const isNum = value => {
+        return /^\d+$/.test(value);
+    }
+
+    const _handleChangePrice = value => {
+        if (isNum(value))
+            setCurrentPrice(value);
+    }
+
     useEffect(() => {
         if (currentName && currentPrice && currentName.length > 0 && currentPrice.length > 0) {
             setDisabled(false);
         } else {
-            setDisabled(true);
+            if (isNum(currentPrice))
+                setDisabled(true);
+            else
+                setDisabled(false);
         }
     }, [currentName, currentPrice]);
 
@@ -32,7 +44,7 @@ const EditProduct = ({ data, handleEdit }) => {
                     </Form.Field>
                     <Form.Field>
                         <label>Price</label>
-                        <Input value={currentPrice} onChange={(e) => setCurrentPrice(e.target.value)} />
+                        <Input value={currentPrice} onChange={(e) => _handleChangePrice(e.target.value)} />
                     </Form.Field>
                 </Form>
             </Modal.Content>
